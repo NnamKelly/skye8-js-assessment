@@ -1,13 +1,3 @@
-/**
- * Skye8 JavaScript Practical Assessment
- * Task 1 - Interactive Expense Calculator
- *
- * Starter file. Implement the functions marked TODO.
- * Do not rename the exported function names or the element ids: the
- * grading rubric references them directly.
- *
- * Maintainer: Engr. Lionel A.
- */
 "use strict";
 
 const els = {
@@ -18,15 +8,13 @@ const els = {
   total: document.getElementById("expense-total"),
   count: document.getElementById("expense-count"),
   empty: document.getElementById("expense-empty"),
+  nameError: document.getElementById("expense-name-error"),
+  amountError: document.getElementById("expense-amount-error"),
 };
 
-/** @type {{ id: string, name: string, amount: number }[]} */
 let expenses = [];
 
-// TODO [T1-01]: Validate the submitted name and amount.
-// Reject an empty name, an empty amount, a non-numeric amount and any
-// amount that is zero or negative. Return a result object the caller can
-// use to populate the field-error elements.
+// validation
 function validateExpense(name, amount) {
   const errors = {};
 
@@ -50,8 +38,7 @@ function validateExpense(name, amount) {
     errors: errors,
   };
 }
-
-// TODO [T1-02]: Add a validated expense to state and re-render.
+// add expenses
 function addExpense(name, amount) {
   const newExpense = {
     id: Date.now().toString(),
@@ -64,7 +51,7 @@ function addExpense(name, amount) {
   renderSummary();
 }
 
-// TODO [T1-03]: Remove one expense by id and re-render.
+// remove expense
 function removeExpense(id) {
   expenses = expenses.filter(function (expense) {
     return expense.id !== id;
@@ -73,19 +60,21 @@ function removeExpense(id) {
   renderSummary();
 }
 
-// TODO [T1-04]: Sum the amounts. Must be derived, never stored.
+// calculate total
 function calculateTotal() {
   let total = 0;
   for (let i = 0; i < expenses.length; i++) {
-    total = total + expenses[i].amount;
+    total += expenses[i].amount;
   }
   return total;
 }
 
-// TODO [T1-05]: Build the list from state. Clear it first. No innerHTML
-// concatenation of unescaped user input.
+// render list
 function renderExpenses() {
-  els.list.innerHTML = "";
+  // Clear old list
+  while (els.list.firstChild) {
+    els.list.removeChild(els.list.firstChild);
+  }
 
   for (let i = 0; i < expenses.length; i++) {
     const expense = expenses[i];
@@ -93,49 +82,56 @@ function renderExpenses() {
     const li = document.createElement("li");
     li.className = "list-item";
 
+    // Name + Amount
     const info = document.createElement("div");
     info.className = "list-item__info";
 
-    const nameSpan = document.createElement("span");
-    nameSpan.className = "list-item__title";
-    nameSpan.textContent = expense.name; // safe way
+    const nameEl = document.createElement("span");
+    nameEl.className = "list-item__title";
+    nameEl.textContent = expense.name;
 
-    const amountSpan = document.createElement("span");
-    amountSpan.className = "list-item__meta";
-    amountSpan.textContent = "₦" + expense.amount.toFixed(2);
+    const amountEl = document.createElement("span");
+    amountEl.className = "list-item__meta";
+    amountEl.textContent = "₦" + expense.amount.toFixed(2);
 
-    info.appendChild(nameSpan);
-    info.appendChild(amountSpan);
+    info.appendChild(nameEl);
+    info.appendChild(amountEl);
 
-    const deleteBtn = document.createElement("button");
-    deleteBtn.type = "button";
-    deleteBtn.className = "btn btn--danger btn--sm";
-    deleteBtn.textContent = "Delete";
-    deleteBtn.setAttribute("data-id", expense.id);
+    // Delete button
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "btn btn--danger btn--sm";
+    btn.textContent = "Delete";
+    btn.dataset.id = expense.id; // modern way
 
     li.appendChild(info);
-    li.appendChild(deleteBtn);
+    li.appendChild(btn);
     els.list.appendChild(li);
   }
 }
 
-// TODO [T1-06]: Toggle the empty state and refresh the total and count.
+//render summary and empty state
 function renderSummary() {
   const total = calculateTotal();
   const count = expenses.length;
 
-  els.total.textContent = count === 0 ? "-" : "₦" + total.toFixed(2);
+  // Update numbers
+  if (count === 0) {
+    els.total.textContent = "-";
+  } else {
+    els.total.textContent = "₦" + total.toFixed(2);
+  }
   els.count.textContent = count;
 
+  // Show / hide empty state
   if (count === 0) {
-    els.empty.hidden = false;
-    els.list.hidden = true;
+    els.empty.style.display = "block";
   } else {
-    els.empty.hidden = true;
-    els.list.hidden = false;
+    els.empty.style.display = "none";
   }
 }
-// clear or show message under input
+
+//helpers
 function clearErrors() {
   els.nameError.textContent = "";
   els.amountError.textContent = "";
@@ -150,12 +146,19 @@ function showErrors(errors) {
   }
 }
 
+// start
 function init() {
-  // TODO [T1-07]: Bind the form submit and the delete delegation, then
-  // perform the first render.
+  // Safety check – if any element is missing, stop and warn
+  for (let key in els) {
+    if (!els[key]) {
+      console.error("Missing element:", key);
+      return;
+    }
+  }
 
+  // Form submit
   els.form.addEventListener("submit", function (event) {
-    event.preventDefault(); // stop the page from refreshing
+    event.preventDefault();
     clearErrors();
 
     const name = els.name.value;
@@ -173,19 +176,17 @@ function init() {
     els.name.focus();
   });
 
-  // Delete buttons (event delegation)
+  // Delete button clicks
   els.list.addEventListener("click", function (event) {
     if (event.target.matches("button[data-id]")) {
-      const id = event.target.getAttribute("data-id");
+      const id = event.target.dataset.id;
       removeExpense(id);
     }
   });
 
-  // First render when page loads
+  // First render
   renderExpenses();
   renderSummary();
 }
-
-document.addEventListener("DOMContentLoaded", init);
 
 document.addEventListener("DOMContentLoaded", init);
