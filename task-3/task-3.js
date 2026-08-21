@@ -175,7 +175,29 @@ function renderTodos() {
 }
 // TODO [T3-09]: Update the counters and toggle the empty state.
 // All counters must be derived from the array, never incremented.
-function renderStats() {}
+function renderStats() {
+  var total = todos.length;
+  var completed = 0;
+
+  for (var i = 0; i < todos.length; i++) {
+    if (todos[i].completed) {
+      completed = completed + 1;
+    }
+  }
+
+  var pending = total - completed;
+
+  els.statTotal.textContent = total;
+  els.statCompleted.textContent = completed;
+  els.statPending.textContent = pending;
+
+  var filtered = getFilteredTodos();
+  if (filtered.length === 0) {
+    els.empty.style.display = "block";
+  } else {
+    els.empty.style.display = "none";
+  }
+}
 
 function init() {
   // TODO [T3-10]: Load state, bind the form submit, bind filter
