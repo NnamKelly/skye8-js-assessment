@@ -69,6 +69,20 @@ function validateStudent(name, score) {
 
 // TODO [T2-03]: Add a validated student to state and re-render.
 function addStudent(name, score) {}
+function addStudent(name, score) {
+  const numericScore = Number(score);
+
+  const newStudent = {
+    id: Date.now().toString(),
+    name: name.trim(),
+    score: numericScore,
+    grade: getGrade(numericScore),
+  };
+
+  students.push(newStudent);
+  renderStudents();
+  renderStats();
+}
 
 // TODO [T2-04]: Remove one student by id and re-render.
 function removeStudent(id) {}
