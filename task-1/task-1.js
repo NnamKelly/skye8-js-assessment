@@ -75,7 +75,11 @@ function removeExpense(id) {
 
 // TODO [T1-04]: Sum the amounts. Must be derived, never stored.
 function calculateTotal() {
-  return 0;
+  let total = 0;
+  for (let i = 0; i < expenses.length; i++) {
+    total = total + expenses[i].amount;
+  }
+  return total;
 }
 
 // TODO [T1-05]: Build the list from state. Clear it first. No innerHTML
