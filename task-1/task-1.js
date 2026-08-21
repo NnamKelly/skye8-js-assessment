@@ -120,7 +120,21 @@ function renderExpenses() {
 }
 
 // TODO [T1-06]: Toggle the empty state and refresh the total and count.
-function renderSummary() {}
+function renderSummary() {
+  const total = calculateTotal();
+  const count = expenses.length;
+
+  els.total.textContent = count === 0 ? "-" : "₦" + total.toFixed(2);
+  els.count.textContent = count;
+
+  if (count === 0) {
+    els.empty.hidden = false;
+    els.list.hidden = true;
+  } else {
+    els.empty.hidden = true;
+    els.list.hidden = false;
+  }
+}
 
 function init() {
   // TODO [T1-07]: Bind the form submit and the delete delegation, then
