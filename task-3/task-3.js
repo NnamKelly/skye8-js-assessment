@@ -116,13 +116,63 @@ function removeTodo(id) {
 // "all" returns everything, "pending" returns incomplete tasks,
 // "completed" returns completed tasks. Filtering must not delete data.
 function getFilteredTodos() {
-  return [];
+  if (currentFilter === "pending") {
+    return todos.filter(function (todo) {
+      return todo.completed === false;
+    });
+  }
+  if (currentFilter === "completed") {
+    return todos.filter(function (todo) {
+      return todo.completed === true;
+    });
+  }
+  return todos; // "all"
 }
 
 // TODO [T3-08]: Build the task list from the filtered state. Clear it
 // first. No innerHTML concatenation of unescaped user input.
-function renderTodos() {}
+function renderTodos() {
+  while (els.list.firstChild) {
+    els.list.removeChild(els.list.firstChild);
+  }
 
+  var filtered = getFilteredTodos();
+
+  for (var i = 0; i < filtered.length; i++) {
+    var todo = filtered[i];
+
+    var li = document.createElement("li");
+    li.className = "list-item";
+    if (todo.completed) {
+      li.className = "list-item list-item--completed";
+    }
+
+    var info = document.createElement("div");
+    info.className = "list-item__info";
+
+    var checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked = todo.completed;
+    checkbox.dataset.id = todo.id;
+
+    var textSpan = document.createElement("span");
+    textSpan.className = "list-item__title";
+    textSpan.textContent = todo.text;
+
+    info.appendChild(checkbox);
+    info.appendChild(textSpan);
+
+    var deleteBtn = document.createElement("button");
+    deleteBtn.type = "button";
+    deleteBtn.className = "btn btn--danger btn--sm";
+    deleteBtn.textContent = "Delete";
+    deleteBtn.dataset.id = todo.id;
+
+    li.appendChild(info);
+    li.appendChild(deleteBtn);
+    els.list.appendChild(li);
+  }
+}
 // TODO [T3-09]: Update the counters and toggle the empty state.
 // All counters must be derived from the array, never incremented.
 function renderStats() {}
