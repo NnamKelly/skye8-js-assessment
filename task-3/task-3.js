@@ -104,8 +104,14 @@ function toggleTodo(id) {
   renderStats();
 }
 // TODO [T3-06]: Remove a task by id, save, and re-render.
-function removeTodo(id) {}
-
+function removeTodo(id) {
+  todos = todos.filter(function (todo) {
+    return todo.id !== id;
+  });
+  saveState();
+  renderTodos();
+  renderStats();
+}
 // TODO [T3-07]: Return the todos that match the current filter.
 // "all" returns everything, "pending" returns incomplete tasks,
 // "completed" returns completed tasks. Filtering must not delete data.
