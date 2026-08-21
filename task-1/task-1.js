@@ -135,10 +135,57 @@ function renderSummary() {
     els.list.hidden = false;
   }
 }
+// clear or show message under input
+function clearErrors() {
+  els.nameError.textContent = "";
+  els.amountError.textContent = "";
+}
+
+function showErrors(errors) {
+  if (errors.name) {
+    els.nameError.textContent = errors.name;
+  }
+  if (errors.amount) {
+    els.amountError.textContent = errors.amount;
+  }
+}
 
 function init() {
   // TODO [T1-07]: Bind the form submit and the delete delegation, then
   // perform the first render.
+
+  els.form.addEventListener("submit", function (event) {
+    event.preventDefault(); // stop the page from refreshing
+    clearErrors();
+
+    const name = els.name.value;
+    const amount = els.amount.value;
+
+    const result = validateExpense(name, amount);
+
+    if (!result.valid) {
+      showErrors(result.errors);
+      return;
+    }
+
+    addExpense(name, amount);
+    els.form.reset();
+    els.name.focus();
+  });
+
+  // Delete buttons (event delegation)
+  els.list.addEventListener("click", function (event) {
+    if (event.target.matches("button[data-id]")) {
+      const id = event.target.getAttribute("data-id");
+      removeExpense(id);
+    }
+  });
+
+  // First render when page loads
+  renderExpenses();
+  renderSummary();
 }
+
+document.addEventListener("DOMContentLoaded", init);
 
 document.addEventListener("DOMContentLoaded", init);
