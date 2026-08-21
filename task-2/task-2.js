@@ -173,7 +173,20 @@ function renderStudents() {
 }
 // TODO [T2-07]: Update the statistics display and toggle the empty state.
 function renderStats() {}
+function renderStats() {
+  const stats = calculateStats();
 
+  els.average.textContent = stats.average;
+  els.highest.textContent = stats.highest;
+  els.lowest.textContent = stats.lowest;
+  els.count.textContent = stats.count;
+
+  if (students.length === 0) {
+    els.empty.style.display = "block";
+  } else {
+    els.empty.style.display = "none";
+  }
+}
 function init() {
   // TODO [T2-08]: Bind the form submit and the delete delegation, then
   // perform the first render.
