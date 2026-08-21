@@ -52,10 +52,26 @@ function validateExpense(name, amount) {
 }
 
 // TODO [T1-02]: Add a validated expense to state and re-render.
-function addExpense(name, amount) {}
+function addExpense(name, amount) {
+  const newExpense = {
+    id: Date.now().toString(),
+    name: name.trim(),
+    amount: Number(amount),
+  };
+
+  expenses.push(newExpense);
+  renderExpenses();
+  renderSummary();
+}
 
 // TODO [T1-03]: Remove one expense by id and re-render.
-function removeExpense(id) {}
+function removeExpense(id) {
+  expenses = expenses.filter(function (expense) {
+    return expense.id !== id;
+  });
+  renderExpenses();
+  renderSummary();
+}
 
 // TODO [T1-04]: Sum the amounts. Must be derived, never stored.
 function calculateTotal() {
