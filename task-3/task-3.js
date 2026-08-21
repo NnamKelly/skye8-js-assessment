@@ -64,7 +64,16 @@ function saveState() {
 // TODO [T3-03]: Validate the submitted text. Reject empty strings and
 // whitespace-only strings.
 function validateTodo(text) {
-  return { valid: false, error: "" };
+  if (!text || text.trim() === "") {
+    return {
+      valid: false,
+      error: "Task cannot be empty",
+    };
+  }
+  return {
+    valid: true,
+    error: "",
+  };
 }
 
 // TODO [T3-04]: Add a new task to state, save, and re-render.
