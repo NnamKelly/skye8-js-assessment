@@ -42,7 +42,29 @@ function getGrade(score) {
 // Reject an empty name, a non-numeric score, a score below 0 and a
 // score above 100.
 function validateStudent(name, score) {
-  return { valid: false, errors: {} };
+  const errors = {};
+
+  if (!name || name.trim() === "") {
+    errors.name = "Student name is required";
+  } else if (name.trim().length < 3) {
+    errors.name = "Name should be at least 3 characters";
+  }
+
+  if (score === "" || score === null || score === undefined) {
+    errors.score = "Score is required";
+  } else {
+    const num = Number(score);
+    if (isNaN(num)) {
+      errors.score = "Score must be a number";
+    } else if (num < 0 || num > 100) {
+      errors.score = "Score must be between 0 and 100";
+    }
+  }
+
+  return {
+    valid: Object.keys(errors).length === 0,
+    errors: errors,
+  };
 }
 
 // TODO [T2-03]: Add a validated student to state and re-render.
