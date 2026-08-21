@@ -58,8 +58,9 @@ function loadState() {
 
 // TODO [T3-02]: Save the current todos array to localStorage under
 // STORAGE_KEY using JSON.stringify.
-function saveState() {}
-
+function saveState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
+}
 // TODO [T3-03]: Validate the submitted text. Reject empty strings and
 // whitespace-only strings.
 function validateTodo(text) {
