@@ -86,12 +86,51 @@ function addStudent(name, score) {
 
 // TODO [T2-04]: Remove one student by id and re-render.
 function removeStudent(id) {}
+function removeStudent(id) {
+  students = students.filter(function (student) {
+    return student.id !== id;
+  });
+  renderStudents();
+  renderStats();
+}
 
 // TODO [T2-05]: Calculate class statistics from the students array.
 // Return average (one decimal), highest, lowest and count. With zero
 // students every stat must be a dash, never NaN.
 function calculateStats() {
-  return { average: "-", highest: "-", lowest: "-", count: 0 };
+  if (students.length === 0) {
+    return {
+      average: "-",
+      highest: "-",
+      lowest: "-",
+      count: 0,
+    };
+  }
+
+  let total = 0;
+  let highest = students[0].score;
+  let lowest = students[0].score;
+
+  for (let i = 0; i < students.length; i++) {
+    const score = students[i].score;
+    total = total + score;
+
+    if (score > highest) {
+      highest = score;
+    }
+    if (score < lowest) {
+      lowest = score;
+    }
+  }
+
+  const average = (total / students.length).toFixed(1);
+
+  return {
+    average: average,
+    highest: highest,
+    lowest: lowest,
+    count: students.length,
+  };
 }
 
 // TODO [T2-06]: Build the student list from state. Clear it first.
