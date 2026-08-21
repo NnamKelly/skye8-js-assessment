@@ -30,12 +30,30 @@ var todos = [];
 
 /** @type {"all"|"pending"|"completed"} */
 var currentFilter = "all";
+{
+  id: ("1724241234567",
+    (text = "Buy milk"),
+    (completed = false),
+    (createdAt = "2026-08-21T14:30:00.000Z"));
+}
 
 // TODO [T3-01]: Load state from localStorage under STORAGE_KEY.
 // Parse with JSON.parse inside a try/catch. Corrupt or absent data
 // must produce an empty array, never a thrown error.
 function loadState() {
-  return [];
+  try {
+    var saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) {
+      return [];
+    }
+    var parsed = JSON.parse(saved);
+    if (Array.isArray(parsed)) {
+      return parsed;
+    }
+    return [];
+  } catch (error) {
+    return [];
+  }
 }
 
 // TODO [T3-02]: Save the current todos array to localStorage under

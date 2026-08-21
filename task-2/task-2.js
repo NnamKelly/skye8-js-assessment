@@ -187,9 +187,53 @@ function renderStats() {
     els.empty.style.display = "none";
   }
 }
+function clearErrors() {
+  els.nameError.textContent = "";
+  els.scoreError.textContent = "";
+}
+//helper function
+function showErrors(errors) {
+  if (errors.name) {
+    els.nameError.textContent = errors.name;
+  }
+  if (errors.score) {
+    els.scoreError.textContent = errors.score;
+  }
+}
 function init() {
   // TODO [T2-08]: Bind the form submit and the delete delegation, then
   // perform the first render.
+  // When the form is submitted
+  els.form.addEventListener("submit", function (event) {
+    event.preventDefault();
+    clearErrors();
+
+    const name = els.name.value;
+    const score = els.score.value;
+
+    const result = validateStudent(name, score);
+
+    if (!result.valid) {
+      showErrors(result.errors);
+      return;
+    }
+
+    addStudent(name, score);
+    els.form.reset();
+    els.name.focus();
+  });
+
+  // When a Delete button is clicked
+  els.list.addEventListener("click", function (event) {
+    if (event.target.matches("button[data-id]")) {
+      const id = event.target.dataset.id;
+      removeStudent(id);
+    }
+  });
+
+  // First time the page loads
+  renderStudents();
+  renderStats();
 }
 
 document.addEventListener("DOMContentLoaded", init);
