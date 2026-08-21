@@ -135,7 +135,42 @@ function calculateStats() {
 
 // TODO [T2-06]: Build the student list from state. Clear it first.
 function renderStudents() {}
+function renderStudents() {
+  while (els.list.firstChild) {
+    els.list.removeChild(els.list.firstChild);
+  }
 
+  for (let i = 0; i < students.length; i++) {
+    const student = students[i];
+
+    const li = document.createElement("li");
+    li.className = "list-item";
+
+    const info = document.createElement("div");
+    info.className = "list-item__info";
+
+    const nameSpan = document.createElement("span");
+    nameSpan.className = "list-item__title";
+    nameSpan.textContent = student.name;
+
+    const metaSpan = document.createElement("span");
+    metaSpan.className = "list-item__meta";
+    metaSpan.textContent = "Score: " + student.score + " | Grade: " + student.grade;
+
+    info.appendChild(nameSpan);
+    info.appendChild(metaSpan);
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.type = "button";
+    deleteBtn.className = "btn btn--danger btn--sm";
+    deleteBtn.textContent = "Delete";
+    deleteBtn.dataset.id = student.id;
+
+    li.appendChild(info);
+    li.appendChild(deleteBtn);
+    els.list.appendChild(li);
+  }
+}
 // TODO [T2-07]: Update the statistics display and toggle the empty state.
 function renderStats() {}
 
