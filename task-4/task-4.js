@@ -2,16 +2,11 @@
  * Skye8 JavaScript Practical Assessment
  * Task 4 - Product Search, Filter and Sort
  *
- * Starter file. Implement the functions marked TODO.
- * Do not rename the exported function names or the element ids: the
- * grading rubric references them directly.
- *
- * The PRODUCTS dataset is loaded from data.js. Do not mutate it.
- * sort() mutates: sort a copy.
- *
- * Maintainer: Engr. Lionel A.
+ * Safe beginner version with debug messages
  */
 "use strict";
+
+console.log("=== Task 4 script started ===");
 
 var els = {
   search: document.getElementById("product-search"),
@@ -23,52 +18,184 @@ var els = {
   empty: document.getElementById("product-empty"),
 };
 
-// TODO [T4-01]: Filter the dataset by search term. Case insensitive,
-// partial match on the product name. Return a new array.
+// Check if elements exist
+for (var key in els) {
+  if (!els[key]) {
+    console.error("Missing element:", key);
+  }
+}
+
+// Check if PRODUCTS exists
+if (typeof PRODUCTS === "undefined") {
+  console.error("PRODUCTS is not defined! Check that data.js is loading.");
+} else {
+  console.log("PRODUCTS loaded successfully. Total products:", PRODUCTS.length);
+}
+
+// TODO [T4-01]
 function applySearch(products, term) {
-  return products;
+  if (!term || term.trim() === "") {
+    return products;
+  }
+  var lowerTerm = term.toLowerCase().trim();
+  return products.filter(function (product) {
+    return product.name.toLowerCase().indexOf(lowerTerm) !== -1;
+  });
 }
 
-// TODO [T4-02]: Filter the dataset by category and by price band.
-// Return a new array. An empty category or price value means "all".
+// TODO [T4-02]
 function applyFilters(products, category, priceBand) {
-  return products;
+  var result = products;
+
+  if (category && category !== "") {
+    result = result.filter(function (product) {
+      return product.category === category;
+    });
+  }
+
+  if (priceBand && priceBand !== "") {
+    result = result.filter(function (product) {
+      var price = product.price;
+
+      if (priceBand === "0-50000") {
+        return price < 50000;
+      }
+      if (priceBand === "50000-150000") {
+        return price >= 50000 && price <= 150000;
+      }
+      if (priceBand === "150000-500000") {
+        return price >= 150000 && price <= 500000;
+      }
+      if (priceBand === "500000-") {
+        return price > 500000;
+      }
+      return true;
+    });
+  }
+
+  return result;
 }
 
-// TODO [T4-03]: Sort a copy of the array by price ascending or
-// descending. An empty sort value returns the array unchanged.
-// Never mutate the input array.
+// TODO [T4-03]
 function applySort(products, sortValue) {
-  return products;
+  if (!sortValue || sortValue === "") {
+    return products;
+  }
+
+  var copy = products.slice(); // important: make a copy
+
+  if (sortValue === "price-asc") {
+    copy.sort(function (a, b) {
+      return a.price - b.price;
+    });
+  }
+
+  if (sortValue === "price-desc") {
+    copy.sort(function (a, b) {
+      return b.price - a.price;
+    });
+  }
+
+  return copy;
 }
 
-// TODO [T4-04]: Compose search, filter and sort into a single
-// pipeline. Read the current control values and return the
-// filtered, sorted array.
+// TODO [T4-04]
 function getVisible() {
-  return [];
+  if (typeof PRODUCTS === "undefined") {
+    return [];
+  }
+
+  var term = els.search.value;
+  var category = els.category.value;
+  var priceBand = els.price.value;
+  var sortValue = els.sort.value;
+
+  var result = PRODUCTS;
+  result = applySearch(result, term);
+  result = applyFilters(result, category, priceBand);
+  result = applySort(result, sortValue);
+
+  return result;
 }
 
-// TODO [T4-05]: Render a single product card. Return a DOM element.
-// No innerHTML concatenation of unescaped user input.
+// TODO [T4-05]
 function createProductCard(product) {
   var card = document.createElement("article");
+  card.className = "card product-card";
+
+  var title = document.createElement("h3");
+  title.className = "product-card__title";
+  title.textContent = product.name;
+
+  var category = document.createElement("p");
+  category.className = "product-card__category";
+  category.textContent = product.category;
+
+  var price = document.createElement("p");
+  price.className = "product-card__price";
+  price.textContent = product.price.toLocaleString() + " XAF";
+
+  var rating = document.createElement("p");
+  rating.className = "product-card__rating";
+  rating.textContent = "Rating: " + product.rating;
+
+  var stock = document.createElement("p");
+  stock.className = "product-card__stock";
+  stock.textContent = product.inStock ? "In stock" : "Out of stock";
+
+  card.appendChild(title);
+  card.appendChild(category);
+  card.appendChild(price);
+  card.appendChild(rating);
+  card.appendChild(stock);
+
   return card;
 }
 
-// TODO [T4-06]: Render the product grid from the visible set.
-// Clear it first.
-function renderProducts(products) {}
+// TODO [T4-06]
+function renderProducts(products) {
+  while (els.grid.firstChild) {
+    els.grid.removeChild(els.grid.firstChild);
+  }
 
-// TODO [T4-07]: Update the visible count display.
-function renderCount(count) {}
+  for (var i = 0; i < products.length; i++) {
+    var card = createProductCard(products[i]);
+    els.grid.appendChild(card);
+  }
+}
 
-// TODO [T4-08]: Toggle the empty state based on visible products.
-function renderEmptyState(count) {}
+// TODO [T4-07]
+function renderCount(count) {
+  els.count.textContent = count;
+}
 
+// TODO [T4-08]
+function renderEmptyState(count) {
+  if (count === 0) {
+    els.empty.style.display = "block";
+  } else {
+    els.empty.style.display = "none";
+  }
+}
+
+function updateView() {
+  var visible = getVisible();
+  console.log("Visible products:", visible.length);
+  renderProducts(visible);
+  renderCount(visible.length);
+  renderEmptyState(visible.length);
+}
+
+// TODO [T4-09]
 function init() {
-  // TODO [T4-09]: Bind search, filter and sort controls, then
-  // perform the first render.
+  console.log("=== init() running ===");
+
+  els.search.addEventListener("input", updateView);
+  els.category.addEventListener("change", updateView);
+  els.price.addEventListener("change", updateView);
+  els.sort.addEventListener("change", updateView);
+
+  updateView();
 }
 
 document.addEventListener("DOMContentLoaded", init);

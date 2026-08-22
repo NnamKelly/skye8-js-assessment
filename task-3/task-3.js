@@ -2,10 +2,7 @@
  * Skye8 JavaScript Practical Assessment
  * Task 3 - Persistent To-Do Application
  *
- * Starter file. Implement the functions marked TODO.
- * Do not rename the exported function names or the element ids: the
- * grading rubric references them directly.
- *
+ * Simple beginner-friendly version
  * Maintainer: Engr. Lionel A.
  */
 "use strict";
@@ -30,16 +27,8 @@ var todos = [];
 
 /** @type {"all"|"pending"|"completed"} */
 var currentFilter = "all";
-{
-  id: ("1724241234567",
-    (text = "Buy milk"),
-    (completed = false),
-    (createdAt = "2026-08-21T14:30:00.000Z"));
-}
 
-// TODO [T3-01]: Load state from localStorage under STORAGE_KEY.
-// Parse with JSON.parse inside a try/catch. Corrupt or absent data
-// must produce an empty array, never a thrown error.
+// TODO [T3-01]: Load state from localStorage
 function loadState() {
   try {
     var saved = localStorage.getItem(STORAGE_KEY);
@@ -56,13 +45,12 @@ function loadState() {
   }
 }
 
-// TODO [T3-02]: Save the current todos array to localStorage under
-// STORAGE_KEY using JSON.stringify.
+// TODO [T3-02]: Save the current todos array
 function saveState() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
 }
-// TODO [T3-03]: Validate the submitted text. Reject empty strings and
-// whitespace-only strings.
+
+// TODO [T3-03]: Validate the submitted text
 function validateTodo(text) {
   if (!text || text.trim() === "") {
     return {
@@ -76,7 +64,7 @@ function validateTodo(text) {
   };
 }
 
-// TODO [T3-04]: Add a new task to state, save, and re-render.
+// TODO [T3-04]: Add a new task
 function addTodo(text) {
   var newTodo = {
     id: Date.now().toString(),
@@ -90,8 +78,8 @@ function addTodo(text) {
   renderTodos();
   renderStats();
 }
-// TODO [T3-05]: Toggle the completed status of a task by id, save,
-// and re-render.
+
+// TODO [T3-05]: Toggle completed status
 function toggleTodo(id) {
   for (var i = 0; i < todos.length; i++) {
     if (todos[i].id === id) {
@@ -103,7 +91,8 @@ function toggleTodo(id) {
   renderTodos();
   renderStats();
 }
-// TODO [T3-06]: Remove a task by id, save, and re-render.
+
+// TODO [T3-06]: Remove a task
 function removeTodo(id) {
   todos = todos.filter(function (todo) {
     return todo.id !== id;
@@ -112,9 +101,8 @@ function removeTodo(id) {
   renderTodos();
   renderStats();
 }
-// TODO [T3-07]: Return the todos that match the current filter.
-// "all" returns everything, "pending" returns incomplete tasks,
-// "completed" returns completed tasks. Filtering must not delete data.
+
+// TODO [T3-07]: Return the todos that match the current filter
 function getFilteredTodos() {
   if (currentFilter === "pending") {
     return todos.filter(function (todo) {
@@ -129,8 +117,7 @@ function getFilteredTodos() {
   return todos; // "all"
 }
 
-// TODO [T3-08]: Build the task list from the filtered state. Clear it
-// first. No innerHTML concatenation of unescaped user input.
+// TODO [T3-08]: Build the task list
 function renderTodos() {
   while (els.list.firstChild) {
     els.list.removeChild(els.list.firstChild);
@@ -173,8 +160,8 @@ function renderTodos() {
     els.list.appendChild(li);
   }
 }
-// TODO [T3-09]: Update the counters and toggle the empty state.
-// All counters must be derived from the array, never incremented.
+
+// TODO [T3-09]: Update the counters and empty state
 function renderStats() {
   var total = todos.length;
   var completed = 0;
@@ -199,10 +186,82 @@ function renderStats() {
   }
 }
 
+// Update filter buttons
+function updateFilterButtons() {
+  els.filterAll.setAttribute("aria-pressed", currentFilter === "all" ? "true" : "false");
+  els.filterPending.setAttribute("aria-pressed", currentFilter === "pending" ? "true" : "false");
+  els.filterCompleted.setAttribute(
+    "aria-pressed",
+    currentFilter === "completed" ? "true" : "false",
+  );
+
+  els.filterAll.classList.toggle("is-active", currentFilter === "all");
+  els.filterPending.classList.toggle("is-active", currentFilter === "pending");
+  els.filterCompleted.classList.toggle("is-active", currentFilter === "completed");
+}
+
+// TODO [T3-10]: Start the application
 function init() {
-  // TODO [T3-10]: Load state, bind the form submit, bind filter
-  // buttons, bind toggle and delete delegation, then perform the
-  // first render.
+  // Load saved tasks
+  todos = loadState();
+
+  // Form submit
+  els.form.addEventListener("submit", function (event) {
+    event.preventDefault();
+    var text = els.input.value;
+    var result = validateTodo(text);
+
+    if (!result.valid) {
+      return;
+    }
+
+    addTodo(text);
+    els.form.reset();
+    els.input.focus();
+  });
+
+  // Filter buttons
+  els.filterAll.addEventListener("click", function () {
+    currentFilter = "all";
+    updateFilterButtons();
+    renderTodos();
+    renderStats();
+  });
+
+  els.filterPending.addEventListener("click", function () {
+    currentFilter = "pending";
+    updateFilterButtons();
+    renderTodos();
+    renderStats();
+  });
+
+  els.filterCompleted.addEventListener("click", function () {
+    currentFilter = "completed";
+    updateFilterButtons();
+    renderTodos();
+    renderStats();
+  });
+
+  // Delete button
+  els.list.addEventListener("click", function (event) {
+    if (event.target.matches("button[data-id]")) {
+      var id = event.target.dataset.id;
+      removeTodo(id);
+    }
+  });
+
+  // Checkbox toggle
+  els.list.addEventListener("change", function (event) {
+    if (event.target.matches("input[type='checkbox'][data-id]")) {
+      var id = event.target.dataset.id;
+      toggleTodo(id);
+    }
+  });
+
+  // First render
+  updateFilterButtons();
+  renderTodos();
+  renderStats();
 }
 
 document.addEventListener("DOMContentLoaded", init);
