@@ -15,6 +15,8 @@ const els = {
   name: document.getElementById("student-name"),
   score: document.getElementById("student-score"),
   list: document.getElementById("student-list"),
+  nameError: document.getElementById("student-name-error"),
+  scoreError: document.getElementById("student-score-error"),
   average: document.getElementById("stat-average"),
   highest: document.getElementById("stat-highest"),
   lowest: document.getElementById("stat-lowest"),
@@ -24,9 +26,6 @@ const els = {
 
 /** @type {{ id: string, name: string, score: number, grade: string }[]} */
 let students = [];
-{
-  id: ("1724240000000", (name = "Jane Doe"), (score = 85), (grade = "A"));
-}
 
 // TODO [T2-01]: Derive a letter grade from a numeric score.
 // A: 80-100, B: 70-79, C: 60-69, D: 50-59, F: below 50.
